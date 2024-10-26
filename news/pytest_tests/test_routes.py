@@ -10,6 +10,7 @@ from pytest_django.asserts import assertRedirects
 
 from news.pytest_tests.constants import (
     HOME_PAGE, LOGIN_PAGE, LOGOUT_PAGE, SIGNUP_PAGE, NEWS_DETAIL_PAGE,
+    COMMENT_DELETE_PAGE, COMMENT_EDIT_PAGE
 )
 from news.models import News
 
@@ -32,6 +33,22 @@ def test_pages_availability_for_anonymous_user(
     страниц регистрации, входа в учётную запись и выхода из неё анонимному 
     пользователю."""
     assert client.get(reverse(name, args=args)).status_code == HTTPStatus.OK
+
+@pytest.mark.parametrize(
+    'parametrized_client, expected_status',
+    (
+        (pytest.lazy_fixture('not_author_client'), HTTPStatus.NOT_FOUND),
+        (pytest.lazy_fixture('author_client'), HTTPStatus.OK)
+    )
+)
+@pytest.mark.parametrize('name', (COMMENT_DELETE_PAGE, COMMENT_EDIT_PAGE))
+def test_pages_availability_for_different_users(
+    parametrized_client, name, comment, expected_status
+):
+    """Проверка доступности страницы удаления и редактирования комментария
+    автору комментария."""
+    assert (parametrized_client.get(
+        reverse(name, args=(comment.pk,))).status_code == expected_status)
 
 
 # @pytest.mark.parametrize(
