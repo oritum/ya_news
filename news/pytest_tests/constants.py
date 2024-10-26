@@ -1,12 +1,16 @@
 """Константы для Pytest."""
 import pytest
-from django.urls import reverse
 
+# Константы разных типов клиентов:
+NOT_AUTHORIZED_CLIENT = pytest.lazy_fixture('client')
+NOT_AUTHOR_CLIENT = pytest.lazy_fixture('not_author_client')
+AUTHOR_CLIENT = pytest.lazy_fixture('author_client')
 
-HOME_PAGE: str = 'news:home'
-NEWS_DETAIL_PAGE: str = 'news:detail'
-COMMENT_DELETE_PAGE: str = 'news:delete'
-COMMENT_EDIT_PAGE: str = 'news:edit'
-LOGIN_PAGE: str = 'users:login'
-LOGOUT_PAGE: str = 'users:logout'
-SIGNUP_PAGE: str = 'users:signup'
+# Константы разных страниц проекта:
+HOME_PAGE: str = pytest.lazy_fixture('homepage_url')
+NEWS_DETAIL_PAGE: str = pytest.lazy_fixture('news_detail_url')
+COMMENT_DELETE_PAGE: str = pytest.lazy_fixture('comment_delete_url')
+COMMENT_EDIT_PAGE: str = pytest.lazy_fixture('comment_edit_url')
+LOGIN_PAGE: str = pytest.lazy_fixture('login_url')
+LOGOUT_PAGE: str = pytest.lazy_fixture('logout_url')
+SIGNUP_PAGE: str = pytest.lazy_fixture('signup_url')

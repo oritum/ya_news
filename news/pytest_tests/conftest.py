@@ -1,10 +1,19 @@
 """Фикстуры для Pytest."""
 
-import pytest
 from typing import Type
-from django.test.client import Client
+
+import pytest
 from django.contrib.auth.models import AbstractBaseUser
-from news.models import News, Comment
+from django.test.client import Client
+from django.urls import reverse
+from datetime import datetime, timedelta
+from news.models import Comment, News
+from yanews.settings import NEWS_COUNT_ON_HOME_PAGE
+
+
+@pytest.fixture(autouse=True)
+def enable_db_access(db):
+    pass
 
 
 @pytest.fixture
@@ -23,6 +32,7 @@ def author_client(author: AbstractBaseUser) -> Client:
     client.force_login(author)
     return client
 
+
 @pytest.fixture
 def not_author_client(not_author: AbstractBaseUser) -> Client:
     client = Client()
@@ -39,11 +49,6 @@ def news() -> News:
 
 
 @pytest.fixture
-def pk_for_args(news: News) -> tuple:
-    return (news.pk,)
-
-
-@pytest.fixture
 def comment(news: News, author: AbstractBaseUser) -> Comment:
     return Comment.objects.create(
         news=news,
@@ -51,15 +56,49 @@ def comment(news: News, author: AbstractBaseUser) -> Comment:
         text='Текст комментария',
     )
 
+
 @pytest.fixture
-def pk_for_comment(comment: Comment) -> tuple:
-    return (comment.pk,)
+def news_home_list() -> list[News]:
+    return News.objects.bulk_create(
+        News(
+            title=f'Заголовок {index}', 
+            text='Текст новости.',
+            date=datetime.today() - timedelta(days=index)
+        )
+        for index in range(NEWS_COUNT_ON_HOME_PAGE + 1)
+    )
 
 
 @pytest.fixture
-def form_data():
-    return {
-        'title': 'Новый заголовок',
-        'text': 'Новый текст',
-        'slug': 'new-slug'
-    } 
+def homepage_url() -> str:
+    return reverse('news:home')
+
+
+@pytest.fixture
+def news_detail_url(news: News) -> str:
+    return reverse('news:detail', args=(news.pk,))
+
+
+@pytest.fixture
+def comment_delete_url(comment: Comment) -> str:
+    return reverse('news:delete', args=(comment.pk,))
+
+
+@pytest.fixture
+def comment_edit_url(comment: Comment) -> str:
+    return reverse('news:edit', args=(comment.pk,))
+
+
+@pytest.fixture
+def login_url() -> str:
+    return reverse('users:login')
+
+
+@pytest.fixture
+def logout_url() -> str:
+    return reverse('users:logout')
+
+
+@pytest.fixture
+def signup_url() -> str:
+    return reverse('users:signup')
