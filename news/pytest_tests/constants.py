@@ -1,5 +1,6 @@
 """Константы для Pytest."""
 import pytest
+from django.utils import timezone
 
 # Константы разных типов клиентов:
 NOT_AUTHORIZED_CLIENT = pytest.lazy_fixture('client')
@@ -14,3 +15,6 @@ COMMENT_EDIT_PAGE: str = pytest.lazy_fixture('comment_edit_url')
 LOGIN_PAGE: str = pytest.lazy_fixture('login_url')
 LOGOUT_PAGE: str = pytest.lazy_fixture('logout_url')
 SIGNUP_PAGE: str = pytest.lazy_fixture('signup_url')
+
+
+NOW = timezone.now()  # Текущие дата и время.
