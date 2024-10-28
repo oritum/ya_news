@@ -67,6 +67,10 @@ def comment(news: News, author: AbstractBaseUser) -> Comment:
 
 
 @pytest.fixture
+def form_data():
+    return {'text': 'Текст комментария'}
+
+@pytest.fixture
 def comments_list(news: News, author: AbstractBaseUser) -> list[Comment]:
     """Создаёт список комментариев с разными датами создания."""
     comments: list = []
