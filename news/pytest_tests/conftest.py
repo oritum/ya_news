@@ -50,10 +50,7 @@ def not_author_client(not_author: AbstractBaseUser) -> Client:
 @pytest.fixture
 def news() -> News:
     """Создаёт объект News."""
-    return News.objects.create(
-        title='Заголовок',
-        text='Текст новости',
-    )
+    return News.objects.create(title='Заголовок', text='Текст новости',)
 
 
 @pytest.fixture
@@ -67,13 +64,21 @@ def comment(news: News, author: AbstractBaseUser) -> Comment:
 
 
 @pytest.fixture
-def form_data():
+def form_data() -> dict[str, str]:
+    """Возвращает словарь с данными формы для создания комментария."""
     return {'text': 'Текст комментария'}
+
+
+@pytest.fixture
+def form_data_new() -> dict[str, str]:
+    """Возвращает словарь с данными формы для создания нового комментария."""
+    return {'text': 'Новый текст комментария'}
+
 
 @pytest.fixture
 def comments_list(news: News, author: AbstractBaseUser) -> list[Comment]:
     """Создаёт список комментариев с разными датами создания."""
-    comments: list = []
+    comments: list[Comment] = []
     for index in range(2):
         comment = Comment.objects.create(
             news=news,
@@ -148,6 +153,33 @@ def homepage_response(client: Client, homepage_url: str) -> HttpResponse:
 
 
 @pytest.fixture
-def news_detail_response(user: Client, news_detail_url: str):
+def news_detail_response(user: Client, news_detail_url: str) -> HttpResponse:
     """Возвращает ответ на запрос к странице новости."""
     return user.get(news_detail_url)
+
+
+@pytest.fixture
+def comment_delete_response(
+    user: Client,
+    comment_delete_url: str
+) -> HttpResponse:
+    """Возвращает ответ на запрос удаления комментария."""
+    return user.delete(comment_delete_url)
+
+
+@pytest.fixture
+def comment_edit_response(
+    user: Client,
+    comment_edit_url: str,
+    form_data_new: dict[str, str],
+) -> HttpResponse:
+    """Возвращает ответ на запрос редактирования комментария."""
+    return user.post(comment_edit_url, form_data_new)
+
+
+@pytest.fixture
+def comments_section_url(
+    news_detail_url: str
+) -> str:
+    """Возвращает адрес секции с комментариями на странице новости."""
+    return f'{news_detail_url}#comments'
